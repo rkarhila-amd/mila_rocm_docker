@@ -1,0 +1,110 @@
+FROM ubuntu:22.04
+
+# Install Dependencies
+# --------------------
+
+#            curl: used to download anaconda
+#             git: used by milabench
+#           rustc: used by BERT models inside https://pypi.org/project/tokenizers/
+# build-essential: for rust
+#         libxml2: pytorch
+#            wget: downloads
+#           cmake: for some rocm tools (let's hope we don't have to compile)
+#           rsync: 
+
+RUN apt-get update &&\
+    apt-get install -y git build-essential curl libxml2 wget cmake rsync &&\
+    apt-get clean &&\
+    rm -rf /var/lib/apt/lists/*
+
+
+## Make the rocm environment:
+# Get the AMD repos; Install the AMD-GPU drivers and rocm stack:
+
+RUN  wget https://repo.radeon.com/amdgpu-install/6.2.2/ubuntu/jammy/amdgpu-install_6.2.60202-1_all.deb \
+   &&  apt-get install -y ./amdgpu-install_6.2.60202-1_all.deb \
+   && rm amdgpu-install_6.2.60202-1_all.deb \
+   && amdgpu-install -y --usecase=rocm \
+   && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+
+
+
+ARG ARCH=rocm
+ENV MILABENCH_GPU_ARCH=$ARCH
+
+ARG CONFIG=standard.yaml
+ENV MILABENCH_CONFIG_NAME=$CONFIG
+ENV MILABENCH_DOCKER=1
+
+
+# Paths
+# -----
+
+ENV MILABENCH_CONFIG=/milabench/milabench/config/$MILABENCH_CONFIG_NAME
+ENV MILABENCH_BASE=/milabench/envs
+ENV MILABENCH_OUTPUT=/milabench/results/
+ENV MILABENCH_ARGS=""
+ENV CONDA_PATH=/opt/anaconda
+
+
+
+WORKDIR /milabench
+
+
+
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+# Install Python
+# --------------
+
+# Install anaconda because milabench will need it later anyway
+RUN curl https://repo.anaconda.com/miniconda/Miniconda3-py310_23.5.0-3-Linux-x86_64.sh  -o ~/miniconda.sh && \
+    /bin/bash ~/miniconda.sh -b -p $CONDA_PATH && rm ~/miniconda.sh
+ENV PATH=$CONDA_PATH/bin:$PATH
+
+# Install dependencies;
+# Do this in several layers as there might be some problems...
+
+RUN python -m pip install --no-cache-dir -U pip            &&\
+    python -m pip install --no-cache-dir -U setuptools     &&\
+    python -m pip install --no-cache-dir -U poetry 
+    
+
+# Copy milabench code from here -- Every time any file is changed in this directory, the
+# build script will go back to this step!
+# --------------
+#COPY . /milabench/milabench/
+#
+# That's why we'd rather clone again:
+#RUN git clone https://github.com/mila-iqia/milabench.git  -b rocm /milabench/milabench
+
+# Install Milabench
+# -----------------
+# A little trickier with source activations.
+RUN --mount=type=bind,source=docker/rocm-venv-kludge-1.sh,target=/tmp/docker/rocm-venv-kludge-1.sh \
+     bash /tmp/docker/rocm-venv-kludge-1.sh
+
+#  then let's see what happens with xformers:
+    RUN --mount=type=bind,source=docker/rocm-venv-kludge-2-xf-tf251.sh,target=/tmp/docker/rocm-venv-kludge-2-xf-tf251.sh \
+    bash /tmp/docker/rocm-venv-kludge-2-xf-tf251.sh
+
+
+# Finally, let's compile flash attention
+RUN --mount=type=bind,source=docker/rocm-venv-kludge-3-fa.sh,target=/tmp/docker/rocm-venv-kludge-3-fa.sh \
+     bash /tmp/docker/rocm-venv-kludge-3-fa.sh
+
+
+
+
+# Prepare bench
+# -------------
+
+# pip times out often when downloading pytorch
+ENV PIP_DEFAULT_TIMEOUT=800
+
+#RUN milabench install --config $MILABENCH_CONFIG --base $MILABENCH_BASE $MILABENCH_ARGS &&\
+#    python -m pip cache purge
+
+CMD ["milabench", "run"]
