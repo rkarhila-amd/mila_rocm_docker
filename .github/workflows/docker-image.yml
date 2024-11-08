@@ -15,4 +15,4 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Build the Docker image
-      run: ARCH=rocm docker build --build-arg ARCH=${ARCH} --build-arg CONFIG=standard-${ARCH}.yaml -f docker/Dockerfile-rocm-mi250mi300_torch251 . --tag milabennch-rocm:mi250mi300_torch251-$(date +%s)
+      run: docker build --build-arg ARCH=rocm --build-arg CONFIG=standard-rocm.yaml -f docker/Dockerfile-rocm-mi250mi300_torch251 . --tag milabennch-rocm:mi250mi300_torch251-$(date +%s)
