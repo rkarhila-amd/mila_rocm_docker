@@ -95,6 +95,9 @@ RUN --mount=type=bind,source=docker/rocm-venv-kludge-1.sh,target=/tmp/docker/roc
 RUN --mount=type=bind,source=docker/rocm-venv-kludge-3-fa.sh,target=/tmp/docker/rocm-venv-kludge-3-fa.sh \
      bash /tmp/docker/rocm-venv-kludge-3-fa.sh
 
+# Finally finally, update torchtune and torchao
+RUN --mount=type=bind,source=docker/rocm-venv-kludge-4-torchtune.sh,target=/tmp/docker/rocm-venv-kludge-4-torchtune.sh \
+     bash /tmp/docker/rocm-venv-kludge-4-torchtune.sh
 
 
 

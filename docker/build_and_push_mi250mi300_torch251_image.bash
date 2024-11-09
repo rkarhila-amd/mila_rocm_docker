@@ -1,12 +1,13 @@
 #!/bin/bash
-
+set -x
+set -e
 # Show how to manually build & Push a docker image
 
 ARCH=${ARCH:-rocm}
 GHUSER=${USER:-} 
 TOKEN=${TOKEN:-} 
 
-TAG="myrepo/milabench-rocm:torch2.5.1-mi250mi300-$(date +"%Y-%m-%d")"
+TAG="mila-rocm-docker:torch2.5.1-mi250mi300-$(date +"%Y-%m-%d")"
 
 
 build_docker () {
@@ -20,11 +21,13 @@ build_docker () {
         .  2>&1 | tee "buildlog-$(date +"%Y-%m-%d-%H%M").log"
 }
 
-#push_docker () {
+push_docker () {
     # Push the image to github
-#    echo $TOKEN | docker login ghcr.io -u $GHUSER --password-stdin 
-#    docker image tag milabench:${ARCH}-${TAG} ghcr.io/$GHUSER/milabench:${ARCH}-${TAG}
-#    docker push ghcr.io/$GHUSER/milabench:${ARCH}-${TAG}
-#}
+    echo $TOKEN | docker login ghcr.io -u $GHUSER --password-stdin 
+    #docker image tag milabench:${ARCH}-${TAG} ghcr.io/$GHUSER/milabench:${ARCH}-${TAG}
+    docker image tag $TAG ghcr.io/$GHUSER/${TAG}
+    docker push ghcr.io/$GHUSER/${TAG}
+}
 
 build_docker
+push_docker
