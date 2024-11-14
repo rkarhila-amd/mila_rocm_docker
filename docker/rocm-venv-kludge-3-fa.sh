@@ -47,5 +47,7 @@ fi
 
     pip uninstall pynvml nvidia-ml-py -y
 
+    pip cache purge
+
 
 # That's it! We'll continue in the next docker step!

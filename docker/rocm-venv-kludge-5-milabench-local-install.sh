@@ -31,19 +31,7 @@ fi
 
 . $MILABENCH_WORDIR/env/bin/activate
 
-    # Remove these packages (again?)
-    #pip uninstall pynvml nvidia-ml-py -y
-
-
-    # We're entering a venv within a venv again, to finish the job with xformers and flash attention
-    . $BENCHMARK_VENV/bin/activate
-    
-    pip uninstall -y torchao
-    pip uninstall -y torchtune
-    pip install torchao==0.6.1 # Earlier 0.3.1
-    #pip install  torchtune==0.3.1 # torchtune==0.3.1 # Earlier 0.2.1
-    # Install torchtune from commmit e1caa9f82fea24d728f9b244a9dd1957f5ed7465 from Nov 10th 2024
-    pip install git+https://github.com/pytorch/torchtune.git@e1caa9f82fea24d728f9b244a9dd1957f5ed7465
-    pip cache purge
+cd /milabench/rocm/milabench
+pip install -e .
 
 # That's it! We'll continue in the next docker step!

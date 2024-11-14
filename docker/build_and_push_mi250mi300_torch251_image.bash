@@ -7,7 +7,7 @@ ARCH=${ARCH:-rocm}
 GHUSER=${USER:-} 
 TOKEN=${TOKEN:-} 
 
-TAG="mila-rocm-docker:torch2.5.1-mi250mi300-$(date +"%Y-%m-%d")"
+TAG="ghcr.io/mila-rocm-docker:torch2.5.1-mi250mi300-$(date +"%Y-%m-%d-%H%M")"
 
 
 build_docker () {

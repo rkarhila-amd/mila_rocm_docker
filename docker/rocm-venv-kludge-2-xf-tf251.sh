@@ -45,5 +45,7 @@ fi
 
     #pip install -v -U git+https://github.com/facebookresearch/xformers.git@main#egg=xformers
 
+    pip cache purge
+
 
 # That's it! We'll continue in the next docker step!

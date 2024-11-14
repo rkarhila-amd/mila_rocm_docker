@@ -49,6 +49,9 @@ milabench install $ARGS
     which pip
     pip uninstall pynvml
 
+    pip cache purge
+
+
     # We're entering a venv within a venv:
         . $BENCHMARK_VENV/bin/activate
 
@@ -74,5 +77,7 @@ milabench install $ARGS
         FORCE_ONLY_CUDA=1 pip install -U -v --use-pep517 --no-build-isolation git+https://github.com/rusty1s/pytorch_cluster.git
         FORCE_ONLY_CUDA=1 pip install -U -v --use-pep517 --no-build-isolation git+https://github.com/rusty1s/pytorch_scatter.git
         FORCE_ONLY_CUDA=1 pip install -U -v --use-pep517 --no-build-isolation git+https://github.com/rusty1s/pytorch_sparse.git
+
+        pip cache purge
 
 # That's it! We'll continue in the next docker step!

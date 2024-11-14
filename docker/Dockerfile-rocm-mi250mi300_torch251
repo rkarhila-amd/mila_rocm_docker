@@ -99,6 +99,9 @@ RUN --mount=type=bind,source=docker/rocm-venv-kludge-3-fa.sh,target=/tmp/docker/
 RUN --mount=type=bind,source=docker/rocm-venv-kludge-4-torchtune.sh,target=/tmp/docker/rocm-venv-kludge-4-torchtune.sh \
      bash /tmp/docker/rocm-venv-kludge-4-torchtune.sh
 
+RUN --mount=type=bind,source=milabench,target=/milabench/rocm/milabench \
+    --mount=type=bind,source=docker/rocm-venv-kludge-5-milabench-local-install.sh,target=/tmp/docker/rocm-venv-kludge-5-milabench-local-install.sh \
+     bash /tmp/docker/rocm-venv-kludge-5-milabench-local-install.sh
 
 
 # Prepare bench
