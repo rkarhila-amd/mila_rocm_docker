@@ -16,7 +16,7 @@ export MILABENCH_CONTAINER_NAME=rkarhila_mila_torch251
 
 set -x
 
-echo "Starting a new container"
+echo "Starting a new container for development: Mounting milabench code from host to container"
 docker run -it --rm --ipc=host                                                  \
             --device=/dev/kfd --device=/dev/dri                                        \
             --security-opt seccomp=unconfined --group-add video                        \
@@ -24,6 +24,7 @@ docker run -it --rm --ipc=host                                                  
             -v $(pwd)/results/runs/:/milabench/rocm/results/runs                         \
             -v $(pwd)/results/data/:/milabench/rocm/results/data                         \
             -v $(pwd)/results/cache/:/milabench/rocm/results/cache                       \
+            -v $(pwd)/milabench:/milabench/rocm/milabench                                \
             --name $MILABENCH_CONTAINER_NAME                                                     \
             $MILABENCH_IMAGE                                                           \
             /tmp/scripts/run_in_rocm_container.sh $@
