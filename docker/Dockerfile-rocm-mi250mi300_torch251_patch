@@ -1,0 +1,9 @@
+FROM ghcr.io/rkarhila-amd/mila-rocm-docker:torch2.5.1-mi250mi300-2024-11-09
+
+RUN --mount=type=bind,source=milabench,target=/milabench/rocm/milabench:rw \
+    --mount=type=bind,source=docker/rocm-venv-kludge-patch.sh,target=/tmp/docker/rocm-venv-kludge-patch.sh \
+     bash /tmp/docker/rocm-venv-kludge-patch.sh
+
+
+
+CMD ["milabench", "run"]
