@@ -1,3 +1,4 @@
 [submodule "milabench"]
 	path = milabench
 	url = git@github.com:rkarhila-amd/milabench.git
+	branch = pytorch2.5

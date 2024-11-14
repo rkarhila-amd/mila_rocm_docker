@@ -14,6 +14,12 @@ Then run your tests with wrapper script. For example, to run llama:
 
 # Build the container: #
 
+Clone the repo with submodules:
+
+`git clone --recurse-submodules git@github.com:rkarhila-amd/mila_rocm_docker.git`
+
+If your milabench submodule is not in `pytorch2.5` branch, do `git submodule update --remote`.
+
 Build:
 
 ` docker/build_and_push_mi250mi300_torch251_image.bash`
