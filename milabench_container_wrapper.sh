@@ -1,7 +1,8 @@
 #!/bin/bash
 
-export MILABENCH_IMAGE=ghcr.io/rkarhila-amd/milabench_rocm:torch2.5.1-mi250mi300-2024-11-07
-
+#export MILABENCH_IMAGE=ghcr.io/rkarhila-amd/milabench_rocm:torch2.5.1-mi250mi300-2024-11-07
+#export MILABENCH_IMAGE=ghcr.io/rkarhila-amd/mila-rocm-docker:torch2.5.1-mi250mi300-2024-11-09
+export MILABENCH_IMAGE=ghcr.io/rkarhila-amd/mila-rocm-docker:torch2.5.1-mi250mi300-2024-11-09_patched
 # Pull the image we are going to run
 docker pull $MILABENCH_IMAGE
 
@@ -32,7 +33,9 @@ set -x
             -v $(pwd)/scripts:/tmp/scripts \
             -v $(pwd)/results/runs/:/milabench/rocm/results/runs                         \
             -v $(pwd)/results/data/:/milabench/rocm/results/data                         \
-            -v $(pwd)/results/cache/:/milabench/rocm/results/cache                         \
+            -v $(pwd)/results/cache/:/milabench/rocm/results/cache                       \
+            -v $(pwd)/milabench:/milabench/rocm/milabench                                \
+            -v $(pwd)/recipe_fixes/llm/recipes:/milabench/rocm/milabench/benchmarks/llm/milarecipes \
             --name $MILABENCH_CONTAINER_NAME                                                     \
             $MILABENCH_IMAGE                                                           \
             /tmp/scripts/run_in_rocm_container.sh $@
