@@ -1,6 +1,14 @@
 # Run tests in prebuilt container: #
 
-put your huggingface token in the marked place in the run script `scripts/run_in_rocm_container.sh`
+Clone this reposority with submodules:
+
+`git clone --recurse-submodules git@github.com:rkarhila-amd/mila_rocm_docker.git`
+
+A branch of milabench called pytorch2.5 is included as a submodule, and you'll need to make
+sure that milabench code really is at that branch. (I think I messed up royally setting it up.)
+Because this is still in development, this directory will be mounted inside the running container.
+
+Then put your huggingface token in the marked place in the run script `scripts/run_in_rocm_container.sh`
 
 Check the mounts in the `milabench_container_wrapper.sh` and edit to your liking -- Otherwise the script will 
 mount `./results` directory into the container. The virtual envs stay in the container, but data and model cache 
@@ -12,15 +20,17 @@ Then run your tests with wrapper script. For example, to run llama:
 
 
 
+
 # Build the container: #
 
 Clone the repo with submodules:
 
 `git clone --recurse-submodules git@github.com:rkarhila-amd/mila_rocm_docker.git`
 
-If your milabench submodule is not in `pytorch2.5` branch, do `git submodule update --remote`.
+If your milabench submodule is not in `pytorch2.5` branch, do `git submodule update --remote` or some other
+operation to put it in the correct branch.
 
-Build:
+To build:
 
 ` docker/build_and_push_mi250mi300_torch251_image.bash`
 
@@ -41,6 +51,23 @@ Change the wrapper script ` ./milabench_container_wrapper.sh` to use your brand 
 
 But don't run just yet. Check the mounts in the wrapper, they tell you where 
 your results will be written. 
+
+# Status on 2024 Nov 15th #
+
+Runs now the "llm-*" tests om MI300:
+
+```
+bench                    | fail |   n | ngpu |       perf |   sem% |   std% | peak_memory |      score | weight
+llama                    |    2 |  10 |    1 |     595.02 |   5.0% |  90.1% |       28777 |    3602.48 |   1.00
+llm-full-mp-gpus         |    6 |   7 |    8 |     389.01 |   2.5% |  13.4% |       36512 |      55.57 |   1.00
+llm-full-mp-nodes        |    2 |   2 |    0 |        nan |   nan% |   nan% |         nan |        nan |   1.00
+llm-lora-ddp-gpus        |    4 |   5 |    8 |   29023.93 |   0.8% |   4.4% |       88865 |    5804.79 |   1.00
+llm-lora-ddp-nodes       |    2 |   2 |    0 |        nan |   nan% |   nan% |         nan |        nan |   1.00
+llm-lora-mp-gpus         |    4 |   5 |    8 |    3437.24 |   2.3% |  12.3% |       59343 |     687.45 |   1.00
+llm-lora-single          |   11 |  19 |    1 |    5625.20 |   1.0% |  15.6% |       72048 |   19425.03 |   1.00
+```
+
+Lots of other tests broken. Probably a problem with container rather than code updates. Will be investigated next.
 
 
 # Status on 2024 Nov 14th #
